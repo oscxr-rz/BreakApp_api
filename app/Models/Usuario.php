@@ -36,12 +36,4 @@ class Usuario extends Authenticatable
     ];
 
     public $timestamps = false;
-
-    protected function casts()
-        {
-            return[
-                'email_verificacion' => 'datetime',
-                'password' => 'hashed',
-            ];
-        }
 }
