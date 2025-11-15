@@ -28,5 +28,7 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
     Route::prefix('/productos')->group(function () {
         Route::get('/', [AdminProductosController::class, 'index']);
         Route::post('/', [AdminProductosController::class, 'store']);
+        Route::put('/{id}', [AdminProductosController::class, 'update']);
+        Route::patch('/{id}/estado', [AdminProductosController::class, 'cambiarEstado']);
     });
 });

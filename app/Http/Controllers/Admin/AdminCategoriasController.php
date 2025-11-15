@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Categoria;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class AdminCategoriasController extends Controller
@@ -13,7 +15,9 @@ class AdminCategoriasController extends Controller
     public function index()
     {
         try {
-            $categorias = Categoria::orderBy('nombre')->get();
+            $categorias = Cache::remember('categorias_agrupadas', 1800, function () {
+            return Categoria::orderBy('nombre')->get();
+            });
 
             return response()->json([
                 'success' => true,
@@ -35,23 +39,28 @@ class AdminCategoriasController extends Controller
             $request->validate([
                 'nombre' => 'required|string|unique:categoria,nombre',
                 'descripcion' => 'required|string',
-                'activo' => 'integer|min:0|max:1'
+                'activo' => 'nullable|integer|min:0|max:1'
             ]);
 
-            $categoria = Categoria::create([
-                'nombre' => $request->nombre,
-                'descripcion' => $request->descripcion,
-                'activo' => $request->activo ?? 1,
-                'fecha_creacion' => now(),
-                'ultima_actualizacion' => now(),
-                'fecha_eliminacion' => $request->activo == 0 ? now() : null
-            ]);
+            return DB::transaction(function () use ($request) {
+                $categoria = Categoria::create([
+                    'nombre' => $request->nombre,
+                    'descripcion' => $request->descripcion,
+                    'activo' => $request->activo ?? 1,
+                    'fecha_creacion' => now(),
+                    'ultima_actualizacion' => now(),
+                    'fecha_eliminacion' => $request->activo == 0 ? now() : null
+                ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Categoría creada correctamente',
-                'data' => $categoria
-            ], 201);
+                Cache::forget('categorias_agrupadas');
+                Cache::forget('productos_agrupados');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Categoría creada correctamente',
+                    'data' => $categoria
+                ], 201);
+            }); 
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -61,7 +70,7 @@ class AdminCategoriasController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request,int $id)
     {
         try {
             $request->validate([
@@ -73,19 +82,24 @@ class AdminCategoriasController extends Controller
                 'descripcion' => 'required|string'
             ]);
 
-            $categoria = Categoria::findOrFail($id);
+            return DB::transaction(function () use ($request, $id) {
+                $categoria = Categoria::findOrFail($id);
+                
+                $categoria->update([
+                    'nombre' => $request->nombre,
+                    'descripcion' => $request->descripcion,
+                    'ultima_actualizacion' => now()
+                ]);
 
-            $categoria->update([
-                'nombre' => $request->nombre,
-                'descripcion' => $request->descripcion,
-                'ultima_actualizacion' => now()
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Categoría actualizada correctamente',
-                'data' => $categoria
-            ], 200);
+                Cache::forget('categorias_agrupadas');
+                Cache::forget('productos_agrupados');
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Categoría actualizada correctamente',
+                    'data' => $categoria
+                ], 200);
+            });
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -95,26 +109,31 @@ class AdminCategoriasController extends Controller
         }
     }
 
-    public function cambiarEstado(Request $request, $id)
+    public function cambiarEstado(Request $request,int $id)
     {
         try {
             $request->validate([
                 'activo' => 'required|integer|min:0|max:1'
             ]);
 
-            $categoria = Categoria::findOrFail($id);
+            return DB::transaction(function () use ($request, $id) {  
+                $categoria = Categoria::findOrFail($id);
+                
+                $categoria->update([
+                    'activo' => $request->activo,
+                    'ultima_actualizacion' => now(),
+                    'fecha_eliminacion' => $request->activo == 0 ? now() : null
+                ]);
 
-            $categoria->update([
-                'activo' => $request->activo,
-                'ultima_actualizacion' => now(),
-                'fecha_eliminacion' => $request->activo == 0 ? now() : null
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Cambio de estado de categoría realizado correctamente',
-                'data' => $categoria
-            ], 200);
+                Cache::forget('categorias_agrupadas');
+                Cache::forget('productos_agrupados');
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cambio de estado de categoría realizado correctamente',
+                    'data' => $categoria
+                ], 200);
+            });
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
