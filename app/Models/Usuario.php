@@ -24,7 +24,6 @@ class Usuario extends Authenticatable
         'password',
         'tipo',
         'grupo',
-        'grupo',
         'imagen_url',
         'activo',
         'fecha_registro',
@@ -36,4 +35,9 @@ class Usuario extends Authenticatable
     ];
 
     public $timestamps = false;
+
+    public function tarjetaLocal()
+    {
+        return $this->hasOne(TarjetaLocal::class, 'id_usuario', 'id_usuario');
+    }
 }

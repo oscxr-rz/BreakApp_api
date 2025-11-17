@@ -16,7 +16,7 @@ class AdminProductosController extends Controller
     {
         try {
             $productos = Cache::remember('productos_agrupados', 1800, function () {
-                return Producto::with(['Categoria:id_categoria,nombre'])
+                return Producto::with('categoria:id_categoria,nombre')
                     ->orderBy('nombre')
                     ->get()
                     ->groupBy('categoria.nombre');
@@ -103,7 +103,7 @@ class AdminProductosController extends Controller
                     'nombre' => $request->nombre,
                     'descripcion' => $request->descripcion,
                     'precio' => $request->precio,
-                    'tiempo_preparacion' => $request->tiempo_preparacion ?? null,
+                    'tiempo_preparacion' => $request->tiempo_preparacion ?? $producto->tiempo_preparacion,
                     'ultima_actualizacion' => now()
                 ]);
 

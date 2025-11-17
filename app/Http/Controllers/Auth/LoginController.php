@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
@@ -14,35 +15,37 @@ class LoginController extends Controller
     {
         try {
             $request->validate([
-                'email' => 'email',
-                'telefono' => 'numeric',
-                'password' => 'required|string'
+                'email' => 'nullable|email',
+                'telefono' => 'nullable|numeric',
+                'password' => 'required|string|min:6'
             ]);
 
-            $usuario = Usuario::where(function ($query) use ($request) {
-                if ($request->has('email')) {
-                    $query->where('email', $request->email);
-                }
-                if ($request->has('telefono')) {
-                    $query->orWhere('telefono', $request->telefono);
-                }
-            })->where('activo', 1)->first();
+            return DB::transaction(function () use ($request) {
+                $usuario = Usuario::where(function ($query) use ($request) {
+                    if ($request->filled('email')) {
+                        $query->where('email', $request->email);
+                    }
+                    if ($request->filled('telefono')) {
+                        $query->orWhere('telefono', $request->telefono);
+                    }
+                })->where('activo', 1)->first();
 
-            if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+                if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Credenciales inválidas',
+                    ], 401);
+                }
+
+                $token = $usuario->createToken('api_token')->plainTextToken;
+
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Credenciales inválidas',
-                ], 401);
-            }
-
-            $token = $usuario->createToken('api_token')->plainTextToken;
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Inicio de sesión exitoso',
-                'data' => $usuario,
-                'token' => $token
-            ], 200);
+                    'success' => true,
+                    'message' => 'Inicio de sesión exitoso',
+                    'data' => $usuario,
+                    'token' => $token
+                ], 200);
+            });
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

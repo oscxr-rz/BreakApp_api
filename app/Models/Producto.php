@@ -23,7 +23,7 @@ class Producto extends Model
     ];
     public $timestamps = false;
 
-    public function Categoria() {
+    public function categoria() {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
     }
 }
