@@ -73,8 +73,7 @@ class RegisterController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al registrar el usuario',
-                'error' => $e->getMessage()
+                'message' => 'Error al registrar el usuario'
             ], 500);
         }
     }

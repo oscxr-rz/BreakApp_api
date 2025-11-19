@@ -49,8 +49,7 @@ class LoginController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al iniciar sesión',
-                'error' => $e->getMessage()
+                'message' => 'Error al iniciar sesión'
             ], 500);
         }
     }

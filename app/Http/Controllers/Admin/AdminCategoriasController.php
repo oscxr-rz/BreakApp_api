@@ -16,7 +16,7 @@ class AdminCategoriasController extends Controller
     {
         try {
             $categorias = Cache::remember('categorias_agrupadas', 1800, function () {
-            return Categoria::orderBy('nombre')->get();
+                return Categoria::orderBy('nombre')->get();
             });
 
             return response()->json([
@@ -27,8 +27,7 @@ class AdminCategoriasController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al mostrar categorías',
-                'error' => $e->getMessage()
+                'message' => 'Error al mostrar categorías'
             ], 500);
         }
     }
@@ -54,23 +53,23 @@ class AdminCategoriasController extends Controller
 
                 Cache::forget('categorias_agrupadas');
                 Cache::forget('productos_agrupados');
+                Cache::forget('menus_agrupados');
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Categoría creada correctamente',
                     'data' => $categoria
                 ], 201);
-            }); 
+            });
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la categoría',
-                'error' => $e->getMessage()
+                'message' => 'Error al crear la categoría'
             ], 500);
         }
     }
 
-    public function update(Request $request,int $id)
+    public function update(Request $request, int $id)
     {
         try {
             $request->validate([
@@ -84,7 +83,7 @@ class AdminCategoriasController extends Controller
 
             return DB::transaction(function () use ($request, $id) {
                 $categoria = Categoria::findOrFail($id);
-                
+
                 $categoria->update([
                     'nombre' => $request->nombre,
                     'descripcion' => $request->descripcion,
@@ -93,7 +92,8 @@ class AdminCategoriasController extends Controller
 
                 Cache::forget('categorias_agrupadas');
                 Cache::forget('productos_agrupados');
-                
+                Cache::forget('menus_agrupados');
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Categoría actualizada correctamente',
@@ -103,22 +103,21 @@ class AdminCategoriasController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar la categoría',
-                'error' => $e->getMessage()
+                'message' => 'Error al actualizar la categoría'
             ], 500);
         }
     }
 
-    public function cambiarEstado(Request $request,int $id)
+    public function cambiarEstado(Request $request, int $id)
     {
         try {
             $request->validate([
                 'activo' => 'required|integer|min:0|max:1'
             ]);
 
-            return DB::transaction(function () use ($request, $id) {  
+            return DB::transaction(function () use ($request, $id) {
                 $categoria = Categoria::findOrFail($id);
-                
+
                 $categoria->update([
                     'activo' => $request->activo,
                     'ultima_actualizacion' => now(),
@@ -127,7 +126,8 @@ class AdminCategoriasController extends Controller
 
                 Cache::forget('categorias_agrupadas');
                 Cache::forget('productos_agrupados');
-                
+                Cache::forget('menus_agrupados');
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Cambio de estado de categoría realizado correctamente',
@@ -137,8 +137,7 @@ class AdminCategoriasController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cambiar el estado de la categoría',
-                'error' => $e->getMessage()
+                'message' => 'Error al cambiar el estado de la categoría'
             ], 500);
         }
     }

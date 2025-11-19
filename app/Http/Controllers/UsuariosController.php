@@ -24,8 +24,7 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al mostrar datos de usuario',
-                'error' => $e->getMessage()
+                'message' => 'Error al mostrar datos de usuario'
             ], 500);
         }
     }
@@ -72,8 +71,7 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar los datos de usuario',
-                'error' => $e->getMessage()
+                'message' => 'Error al actualizar los datos de usuario'
             ], 500);
         }
     }
@@ -102,8 +100,7 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actulizar imagen',
-                'error' => $e->getMessage()
+                'message' => 'Error al actulizar imagen'
             ], 500);
         }
     }
@@ -139,8 +136,7 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar contraseña',
-                'error' => $e->getMessage()
+                'message' => 'Error al actualizar contraseña'
             ], 500);
         }
     }
@@ -178,8 +174,7 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al desactivar la cuenta',
-                'error' => $e->getMessage()
+                'message' => 'Error al desactivar la cuenta'
             ], 500);
         }
     }

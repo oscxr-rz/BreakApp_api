@@ -23,7 +23,19 @@ class Producto extends Model
     ];
     public $timestamps = false;
 
-    public function categoria() {
+    public function categoria()
+    {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
+    }
+
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'menu_producto', 'id_producto', 'id_menu')
+            ->withPivot('cantidad_disponible');
+    }
+
+    public function menuProductos()
+    {
+        return $this->hasMany(MenuProducto::class, 'id_producto', 'id_producto');
     }
 }

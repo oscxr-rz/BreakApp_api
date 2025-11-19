@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Categoria;
 use App\Models\Producto;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class AdminProductosController extends Controller
                 return Producto::with('categoria:id_categoria,nombre')
                     ->orderBy('nombre')
                     ->get()
-                    ->groupBy('categoria.nombre');
+                    ->groupBy('categoria.nombre')
+                    ->sortKeys();
             });
 
             return response()->json([
@@ -30,8 +32,7 @@ class AdminProductosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al mostrar productos',
-                'error' => $e->getMessage()
+                'message' => 'Error al mostrar productos'
             ], 500);
         }
     }
@@ -40,7 +41,13 @@ class AdminProductosController extends Controller
     {
         try {
             $request->validate([
-                'id_categoria' => 'required|integer|exists:categoria,id_categoria',
+                'id_categoria' => [
+                    'required',
+                    'integer',
+                    Rule::exists('categoria', 'id_categoria')->where(function ($query) {
+                        $query->where('activo', 1);
+                    })
+                ],
                 'nombre' => 'required|string|unique:producto,nombre',
                 'descripcion' => 'required|string',
                 'precio' => 'required|numeric',
@@ -63,6 +70,7 @@ class AdminProductosController extends Controller
                 ]);
 
                 Cache::forget('productos_agrupados');
+                Cache::forget('menus_agrupados');
 
                 return response()->json([
                     'success' => true,
@@ -73,8 +81,7 @@ class AdminProductosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear el producto',
-                'error' => $e->getMessage()
+                'message' => 'Error al crear el producto'
             ]);
         }
     }
@@ -83,7 +90,13 @@ class AdminProductosController extends Controller
     {
         try {
             $request->validate([
-                'id_categoria' => 'required|integer|exists:categoria,id_categoria',
+                'id_categoria' => [
+                    'required',
+                    'integer',
+                    Rule::exists('categoria', 'id_categoria')->where(function ($query) {
+                        $query->where('activo', 1);
+                    })
+                ],
                 'nombre' => [
                     'required',
                     'string',
@@ -108,6 +121,7 @@ class AdminProductosController extends Controller
                 ]);
 
                 Cache::forget('productos_agrupados');
+                Cache::forget('menus_agrupados');
 
                 return response()->json([
                     'success' => true,
@@ -118,8 +132,7 @@ class AdminProductosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar el producto',
-                'error' => $e->getMessage()
+                'message' => 'Error al actualizar el producto'
             ], 500);
         }
     }
@@ -141,6 +154,7 @@ class AdminProductosController extends Controller
                 ]);
 
                 Cache::forget('productos_agrupados');
+                Cache::forget('menus_agrupados');
 
                 return response()->json([
                     'success' => true,
@@ -151,8 +165,7 @@ class AdminProductosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cambiar el estado de el producto',
-                'error' => $e->getMessage()
+                'message' => 'Error al cambiar el estado de el producto'
             ], 500);
         }
     }

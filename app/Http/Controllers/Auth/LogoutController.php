@@ -20,8 +20,7 @@ class LogoutController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cerrar sesión',
-                'error' => $e->getMessage()
+                'message' => 'Error al cerrar sesión'
             ], 500);
         }
     }

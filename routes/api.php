@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminCategoriasController;
+use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Middleware\ValidarPermisoUsuario;
 use Illuminate\Support\Facades\Route;
 
 //Usuario
@@ -39,5 +39,10 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::post('/', [AdminProductosController::class, 'store']);
         Route::put('/{id}', [AdminProductosController::class, 'update']);
         Route::patch('/{id}/estado', [AdminProductosController::class, 'cambiarEstado']);
+    });
+
+    Route::prefix('/menus')->group(function () {
+        Route::get('/', [AdminMenuController::class, 'index']);
+        Route::post('/', [AdminMenuController::class, 'store']);
     });
 });
