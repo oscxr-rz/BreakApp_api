@@ -109,14 +109,14 @@ class UsuariosController extends Controller
     {
         try {
             $request->validate([
-                'password1' => 'required|string|min:6',
-                'password' => 'required|string|min:6'
+                'password' => 'required|string|min:6',
+                'passwordNueva' => 'required|string|min:6'
             ]);
 
             return DB::transaction(function () use ($request, $id) {
                 $usuario = Usuario::where('activo', 1)->findOrFail($id);
 
-                if (!Hash::check($request->password1, $usuario->password)) {
+                if (!Hash::check($request->password, $usuario->password)) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Credenciales inválidas',
@@ -124,7 +124,7 @@ class UsuariosController extends Controller
                 }
 
                 $usuario->update([
-                    'password' => Hash::make($request->password),
+                    'password' => Hash::make($request->passwordNueva),
                     'ultima_actualizacion' => now()
                 ]);
 

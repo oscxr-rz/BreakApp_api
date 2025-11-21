@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
         Route::get('/{id}', [CarritoController::class, 'show']);
         Route::post('/{id}/add', [CarritoController::class, 'addCarrito']);
         Route::post('/{id}/remove', [CarritoController::class, 'removeCarrito']);
+        Route::patch('/{id}/eliminar', [CarritoController::class, 'removeCarrito']);
     });
 
     //Tarjeta Digital

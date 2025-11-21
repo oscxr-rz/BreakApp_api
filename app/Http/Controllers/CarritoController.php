@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ActualizarCarrito;
 use App\Models\Carrito;
 use App\Models\CarritoProducto;
 use Carbon\Carbon;
@@ -88,6 +89,8 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
+                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Producto agregado correctamente',
@@ -146,6 +149,8 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
+                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Producto eliminado correctamente',
@@ -180,6 +185,50 @@ class CarritoController extends Controller
         $carritoProducto = CarritoProducto::where('id_carrito', $idCarrito)
             ->where('id_producto', $idProducto)
             ->first();
+
+        return $carritoProducto;
+    }
+
+    public function eliminarCarrito(Request $request, int $id)
+    {
+        try {
+            $request->validate([
+                'id_producto' => 'required|integer|exists:producto,id_producto'
+            ]);
+
+            return DB::transaction(function () use ($request, $id) {
+                $carrito = Carrito::where('id_usuario', $id)->firstOrFail();
+
+                $carrito->update([
+                    'ultima_actualizacion' => now()
+                ]);
+
+                $carritoProducto = $this->eliminarCarritoProducto($carrito->id_carrito, $request->id_producto, $request->cantidad);
+
+                $carrito->refresh();
+
+                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Producto eliminado correctamente',
+                    'data' => $carrito->load('productos')
+                ], 200);
+            });
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar del carrito'
+            ], 500);
+        }
+    }
+
+    private function eliminarCarritoProducto(int $idCarrito, int $idProducto, int $cantidad)
+    {
+        $carritoProducto = CarritoProducto::where('id_carrito', $idCarrito)
+            ->where('id_producto', $idProducto)
+            ->delete();
+
 
         return $carritoProducto;
     }
