@@ -66,7 +66,14 @@ class CarritoController extends Controller
     {
         try {
             $request->validate([
-                'id_producto' => 'required|integer|exists:producto,id_producto',
+                'id_producto' => [
+                    'required',
+                    'integer',
+                    'distinct',
+                    Rule::exists('producto', 'id_producto')->where(function ($query) {
+                        $query->where('activo', 1);
+                    })
+                ],
                 'cantidad' => 'required|integer|min:1'
             ]);
 
