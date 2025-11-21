@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\TarjetaLocalController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,11 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
         Route::get('/{id}', [CarritoController::class, 'show']);
         Route::post('/{id}/add', [CarritoController::class, 'addCarrito']);
         Route::post('/{id}/remove', [CarritoController::class, 'removeCarrito']);
+    });
+
+    //Tarjeta Digital
+    Route::prefix('/tarjeta-local')->group(function () {
+        Route::get('/{id}', [TarjetaLocalController::class, 'show']);
     });
 });
 

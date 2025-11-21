@@ -14,7 +14,7 @@ class UsuariosController extends Controller
     public function show(int $id)
     {
         try {
-            $usuario = Usuario::with('tarjetaLocal:id_tarjeta_local,id_usuario,saldo')->findOrFail($id);
+            $usuario = Usuario::select('id_usuario','nombre','apellido','email','telefono','tipo','grupo','imagen_url')->with('tarjetaLocal:id_tarjeta_local,id_usuario,saldo')->findOrFail($id);
 
             return response()->json([
                 'success' => true,
