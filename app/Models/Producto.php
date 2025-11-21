@@ -38,4 +38,15 @@ class Producto extends Model
     {
         return $this->hasMany(MenuProducto::class, 'id_producto', 'id_producto');
     }
+
+    public function carrito()
+    {
+        return $this->belongsToMany(Carrito::class, 'carrito_producto', 'id_producto', 'id_carrito')
+            ->withPivot('cantidad');
+    }
+
+    public function carritoProductos()
+    {
+        return $this->hasMany(CarritoProducto::class, 'id_producto', 'id_producto');
+    }
 }

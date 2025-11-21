@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,11 +17,19 @@ Route::get('/logout', [LogoutController::class, 'logout'])->middleware('auth:san
 
 //Usuarios
 Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->group(function () {
+    //Usuario
     Route::get('/{id}', [UsuariosController::class, 'show']);
     Route::put('/{id}', [UsuariosController::class, 'update']);
     Route::patch('/{id}/imagen', [UsuariosController::class, 'updateImagen']);
     Route::patch('/{id}/password', [UsuariosController::class, 'updatePassword']);
     Route::patch('/{id}/desactivar', [UsuariosController::class, 'desactivar']);
+
+    //Carrito
+    Route::prefix('/carrito')->group(function () {
+        Route::get('/{id}', [CarritoController::class, 'show']);
+        Route::post('/{id}/add', [CarritoController::class, 'addCarrito']);
+        Route::post('/{id}/remove', [CarritoController::class, 'removeCarrito']);
+    });
 });
 
 //Administradores
@@ -41,8 +50,11 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::patch('/{id}/estado', [AdminProductosController::class, 'cambiarEstado']);
     });
 
+    //Menus
     Route::prefix('/menus')->group(function () {
         Route::get('/', [AdminMenuController::class, 'index']);
         Route::post('/', [AdminMenuController::class, 'store']);
+        Route::put('/{id}', [AdminMenuController::class, 'update']);
+        Route::patch('/{id}/estado', [AdminMenuController::class, 'cambiarEstado']);
     });
 });

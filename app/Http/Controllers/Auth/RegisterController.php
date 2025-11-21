@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Carrito;
 use App\Models\TarjetaLocal;
 use App\Models\Usuario;
 use Exception;
@@ -56,6 +57,12 @@ class RegisterController extends Controller
                 $tarjetaLocal = TarjetaLocal::create([
                     'id_usuario' => $usuario->id_usuario,
                     'saldo' => 0,
+                    'fecha_creacion' => now(),
+                    'ultima_actualizacion' => now()
+                ]);
+
+                $carrito = Carrito::create([
+                    'id_usuario' => $usuario->id_usuario,
                     'fecha_creacion' => now(),
                     'ultima_actualizacion' => now()
                 ]);
