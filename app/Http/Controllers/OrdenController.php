@@ -8,6 +8,7 @@ use App\Models\MenuProducto;
 use App\Models\Orden;
 use App\Models\OrdenDetalle;
 use App\Models\TarjetaLocal;
+use App\Models\Transaccion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,13 @@ class OrdenController extends Controller
     {
         try {
             $request->validate([
-                'id_menu' => 'required|integer|exists:menu,id_menu',
+                'id_menu' => [
+                    'required',
+                    'integer',
+                    Rule::exists('menu', 'id_menu')->where(function ($query) {
+                        $query->where('activo', 1);
+                    })
+                ],
                 'metodo_pago' => 'required|string|in:SALDO,EFECTIVO,TARJETA',
                 'hora_recogida' => 'required|date_format:H:i',
                 'productos' => 'required|array|min:1',
@@ -73,6 +80,7 @@ class OrdenController extends Controller
                 }
 
                 $this->crearImgQr($id, $qr, $orden->id_orden);
+                $this->registrarTransaccion($id, $orden->id_orden, $total);
 
                 $orden->refresh();
 
@@ -90,8 +98,7 @@ class OrdenController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la orden',
-                'error' => $e->getMessage()
+                'message' => 'Error al crear la orden'
             ], 500);
         }
     }
@@ -201,5 +208,53 @@ class OrdenController extends Controller
                 'codigo_qr' => $qr,
                 'imagen_url' => $imagenUrl
             ]);
+    }
+
+    private function registrarTransaccion($id, $idOrden, $monto)
+    {
+        Transaccion::create([
+            'id_usuario' => $id,
+            'id_orden' => $idOrden,
+            'monto' => $monto,
+            'tipo' => 'COMPRA',
+            'fecha_creacion' => now()
+        ]);
+    }
+
+    public function ocultar(Request $request, int $id)
+    {
+        try {
+            $request->validate([
+                'id_orden' => 'required|integer|exists:orden,id_orden'
+            ]);
+
+            $orden = Orden::where('id_usuario', $id)->findOrFail($request->id_orden);
+
+            if ($orden->estado !== 'ENTREGADO') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La orden no se puede ocultar si no ha sido entregada'
+                ], 422);
+            }
+
+            return DB::transaction(function () use ($orden) {
+
+                $orden->update([
+                    'oculto' => 1,
+                    'ultima_actualizacion' => now()
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Orden oculta correctamente',
+                    'data' => $orden
+                ], 200);
+            });
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al ocultar orden'
+            ], 500);
+        }
     }
 }

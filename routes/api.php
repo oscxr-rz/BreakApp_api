@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\MenuDiarioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\TarjetaLocalController;
 use App\Http\Controllers\UsuariosController;
@@ -41,7 +42,13 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
     Route::prefix('/orden')->group(function () {
         Route::get('/{id}', [OrdenController::class, 'index']);
         Route::post('/{id}', [OrdenController::class, 'store']);
+        Route::patch('/{id}/ocultar', [OrdenController::class, 'ocultar']);
     });
+});
+
+//Menú diario
+Route::prefix('/menu')->group(function () {
+    Route::get('/', [MenuDiarioController::class, 'menuDiario']);
 });
 
 //Administradores
