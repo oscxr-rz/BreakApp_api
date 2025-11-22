@@ -14,7 +14,7 @@ class MenuDiarioController extends Controller
 
             $fechaHoy = now()->startOfDay();
 
-            $menuDia = Menu::where('fecha', $fechaHoy)->with(
+            $menuDia = Menu::where('fecha', $fechaHoy)->where('activo', 1)->with(
                 'productos:id_producto,id_categoria,nombre,descripcion,precio,tiempo_preparacion,imagen_url',
                 'productos.categoria:id_categoria,nombre'
             )->get()->map(function ($menu) {
