@@ -41,7 +41,7 @@ class CarritoController extends Controller
                                     'precio' => $producto->precio,
                                     'tiempo_preparacion' => $producto->tiempo_preparacion,
                                     'imagen_url' => $producto->imagen_url,
-                                    'cantidad_disponible' => $producto->pivot->cantidad_disponible,
+                                    'cantidad' => $producto->pivot->cantidad,
                                     'categoria' => $producto->categoria->nombre,
                                     'activoAhora' => $activoAhora
                                 ];
@@ -89,7 +89,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
 
                 return response()->json([
                     'success' => true,
@@ -149,7 +149,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
 
                 return response()->json([
                     'success' => true,
@@ -207,7 +207,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray))->toOthers();
+                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
 
                 return response()->json([
                     'success' => true,

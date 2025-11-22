@@ -6,12 +6,15 @@ use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Broadcasting\AuthController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\MenuDiarioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\TarjetaLocalController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/broadcasting/auth', [AuthController::class, 'authenticate']);
 
 //Usuario
 Route::post('/login', [LoginController::class, 'login']);

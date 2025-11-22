@@ -87,7 +87,7 @@ class OrdenController extends Controller
                 $menuActualizado = Menu::with('productos')
                     ->find($request->id_menu);
 
-                broadcast(new ActualizarMenu($menuActualizado->toArray));
+                broadcast(new ActualizarMenu($menuActualizado->toArray()));
 
                 return response()->json([
                     'success' => true,
