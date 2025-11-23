@@ -43,8 +43,9 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
         Route::get('/{id}', [TarjetaLocalController::class, 'show']);
     });
 
+    //Ordenes
     Route::prefix('/orden')->group(function () {
-        Route::get('/{id}', [OrdenController::class, 'index']);
+        Route::get('/{id}', [OrdenController::class, 'show']);
         Route::post('/{id}', [OrdenController::class, 'store']);
         Route::patch('/{id}/ocultar', [OrdenController::class, 'ocultar']);
     });

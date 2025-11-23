@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ActualizarMenu;
+use App\Events\ActualizarOrden;
 use App\Models\Menu;
 use App\Models\MenuProducto;
 use App\Models\Orden;
@@ -19,10 +20,32 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class OrdenController extends Controller
 {
-    public function index(int $id)
+    public function show(int $id)
     {
         try {
-            $ordenes = Orden::with('productos')->where('id_usuario', $id)->get();
+            $ordenes = Orden::where('oculto', 0)->with('productos')->where('id_usuario', $id)->orderBy('id_orden')->get()
+                ->map(function ($orden) {
+                    return [
+                        'id_orden' => $orden->id_orden,
+                        'estado' => $orden->estado,
+                        'total' => $orden->total,
+                        'metodo_pago' => $orden->metodo_pago,
+                        'imagen_url' => $orden->imagen_url,
+                        'hora_recogida' => $orden->hora_recogida,
+                        'productos' => $orden->productos->map(function ($producto) {
+                            return [
+                                'id_producto' => $producto->id_producto,
+                                'id_categoria' => $producto->id_categoria,
+                                'nombre' => $producto->nombre,
+                                'descripcion' => $producto->descripcion,
+                                'precio' => $producto->precio,
+                                'imagen_url' => $producto->imagen_url,
+                                'cantidad' => $producto->pivot->cantidad,
+                                'notas' => $producto->pivot->notas
+                            ];
+                        })
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
@@ -237,13 +260,14 @@ class OrdenController extends Controller
                 ], 422);
             }
 
-            return DB::transaction(function () use ($orden) {
+            return DB::transaction(function () use ($id, $orden) {
 
                 $orden->update([
                     'oculto' => 1,
                     'ultima_actualizacion' => now()
                 ]);
 
+                broadcast(new ActualizarOrden($id, $orden));
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden oculta correctamente',

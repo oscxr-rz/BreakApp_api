@@ -26,7 +26,7 @@ class CarritoController extends Controller
                         'id_carrito' => $carrito->id_carrito,
                         'id_usuario' => $carrito->id_usuario,
                         'productos' => $carrito->productos->sortBy('nombre')->groupBy('categoria.nombre')->sortKeys()->map(function ($productos) {
-                            return $productos->map(function ($producto) {
+                            return $productos->map(function ($producto) use ($productos) {
 
                                 $menuHoy = $producto->menus->first(function ($menu) {
                                     return Carbon::parse($menu->fecha)->isToday();
@@ -38,12 +38,13 @@ class CarritoController extends Controller
                                     'id_producto' => $producto->id_producto,
                                     'nombre' => $producto->nombre,
                                     'descripcion' => $producto->descripcion,
-                                    'precio' => $producto->precio,
+                                    'precio_unitario' => $producto->precio,
                                     'tiempo_preparacion' => $producto->tiempo_preparacion,
                                     'imagen_url' => $producto->imagen_url,
                                     'cantidad' => $producto->pivot->cantidad,
                                     'categoria' => $producto->categoria->nombre,
-                                    'activoAhora' => $activoAhora
+                                    'activoAhora' => $activoAhora,
+                                    'id_menu' => $menuHoy->id_menu ?? null
                                 ];
                             });
                         })
