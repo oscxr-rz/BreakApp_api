@@ -203,7 +203,7 @@ class CarritoController extends Controller
                     'ultima_actualizacion' => now()
                 ]);
 
-                $carritoProducto = $this->eliminarCarritoProducto($carrito->id_carrito, $request->id_producto, $request->cantidad);
+                $carritoProducto = $this->eliminarCarritoProducto($carrito->id_carrito, $request->id_producto);
 
                 $carrito->refresh();
 
@@ -223,7 +223,7 @@ class CarritoController extends Controller
         }
     }
 
-    private function eliminarCarritoProducto(int $idCarrito, int $idProducto, int $cantidad)
+    private function eliminarCarritoProducto(int $idCarrito, int $idProducto)
     {
         $carritoProducto = CarritoProducto::where('id_carrito', $idCarrito)
             ->where('id_producto', $idProducto)
