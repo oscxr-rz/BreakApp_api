@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ActualizarCarrito;
 use App\Events\ActualizarMenu;
 use App\Events\ActualizarOrden;
+use App\Models\Carrito;
+use App\Models\CarritoProducto;
 use App\Models\Menu;
 use App\Models\MenuProducto;
 use App\Models\Orden;
@@ -97,6 +100,7 @@ class OrdenController extends Controller
                 $orden = $this->crearOrden($id, $request, $total);
                 $qr = $this->crearQR($id, $orden->id_orden);
                 $this->crearDetalleOrden($orden, $request->productos, $request->id_menu);
+                $this->actualizarcarrito($id, $request->productos);
 
                 if ($request->metodo_pago === 'SALDO') {
                     $this->procesarPago($tarjetaLocal, $total);
@@ -111,6 +115,7 @@ class OrdenController extends Controller
                     ->find($request->id_menu);
 
                 broadcast(new ActualizarMenu($menuActualizado->toArray()));
+                broadcast(new ActualizarCarrito($id, $orden->toArray()));
 
                 return response()->json([
                     'success' => true,
@@ -195,6 +200,24 @@ class OrdenController extends Controller
         }
 
         return $detalleOrden;
+    }
+
+    private function actualizarcarrito(int $idUsuario, array $productos)
+    {
+        $carritoProductos = [];
+        $carrito = Carrito::where('id_usuario', $idUsuario)->firstOrFail();
+        $carrito->update([
+            'ultima_actualizacion' => now()
+        ]);
+
+        foreach ($productos as $producto) {
+            $carritoProducto = CarritoProducto::where('id_carrito', $carrito->id_carrito)
+                ->where('id_producto', $producto['id_producto'])
+                ->delete();
+            $carritoProductos[] = $carritoProducto;
+        }
+
+        return $carritoProductos;
     }
 
     private function procesarPago(TarjetaLocal $tarjeta, float $total): void

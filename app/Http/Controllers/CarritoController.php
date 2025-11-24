@@ -33,6 +33,18 @@ class CarritoController extends Controller
                                 });
 
                                 $activoAhora = $menuHoy ? $menuHoy->activo : 0;
+                                
+                                $disponible = false;
+                                $cantidadDisponible = null;
+
+                                if ($menuHoy) {
+                                    $productoEnMenu = $menuHoy->productos->firstWhere('id_producto', $producto->id_producto);
+                                    $disponible = $productoEnMenu 
+                                        ? $productoEnMenu->pivot->cantidad_disponible >= $producto->pivot->cantidad 
+                                        : false;
+                                    
+                                    $cantidadDisponible = $productoEnMenu ? $productoEnMenu->pivot->cantidad_disponible : null;
+                                }
 
                                 return [
                                     'id_producto' => $producto->id_producto,
@@ -44,7 +56,9 @@ class CarritoController extends Controller
                                     'cantidad' => $producto->pivot->cantidad,
                                     'categoria' => $producto->categoria->nombre,
                                     'activoAhora' => $activoAhora,
-                                    'id_menu' => $menuHoy->id_menu ?? null
+                                    'id_menu' => $menuHoy->id_menu ?? null,
+                                    'disponible' => $disponible,
+                                    'cantidad_disponible' => $cantidadDisponible
                                 ];
                             });
                         })
