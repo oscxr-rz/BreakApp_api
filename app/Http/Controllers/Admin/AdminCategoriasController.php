@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Admin\ActualizarCategoria;
 use App\Http\Controllers\Controller;
 use App\Models\Categoria;
 use Exception;
@@ -55,6 +56,8 @@ class AdminCategoriasController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
+                broadcast(new ActualizarCategoria($categoria->toArray()));
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Categoría creada correctamente',
@@ -94,6 +97,8 @@ class AdminCategoriasController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
+                broadcast(new ActualizarCategoria($categoria->toArray()));
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Categoría actualizada correctamente',
@@ -127,6 +132,8 @@ class AdminCategoriasController extends Controller
                 Cache::forget('categorias_agrupadas');
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
+
+                broadcast(new ActualizarCategoria($categoria->toArray()));
 
                 return response()->json([
                     'success' => true,

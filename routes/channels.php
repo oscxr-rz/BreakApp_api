@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Log;
 
 Broadcast::channel('menu', function () {
     return true;
+});
+
+Broadcast::channel('admin', function ($usuario) {
+    return $usuario->tipo === 'ADMINISTRADOR';
 });
 
 Broadcast::channel('usuario.{id}', function ($usuario, $id) {
