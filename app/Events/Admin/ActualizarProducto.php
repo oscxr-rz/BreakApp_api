@@ -10,28 +10,29 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ActualizarCategoria implements ShouldBroadcast
+class ActualizarProducto implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $categoria;
 
-    public function __construct($categoria)
+    public $producto;
+    public function __construct($producto)
     {
-        $this->categoria = $categoria;
+        $this->producto = $producto;
     }
+
     public function broadcastOn()
     {
         return new Channel('admin');
     }
 
-    public function broadcastAs() {
-        return 'ActualizarCategoria';
+    public function broadcastAs(){
+        return 'ActualizarProducto';
     }
 
     public function broadcastWith()
     {
         return [
-            'categoria' => $this->categoria
+            'producto' => $this->producto
         ];
     }
 }

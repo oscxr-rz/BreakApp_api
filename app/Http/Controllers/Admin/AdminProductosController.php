@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Admin\ActualizarProducto;
 use App\Http\Controllers\Controller;
 use App\Models\Categoria;
 use App\Models\Producto;
@@ -155,6 +156,8 @@ class AdminProductosController extends Controller
 
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
+
+                broadcast(new ActualizarProducto($producto->toArray()));
 
                 return response()->json([
                     'success' => true,

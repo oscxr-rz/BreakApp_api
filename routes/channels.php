@@ -6,8 +6,8 @@ Broadcast::channel('menu', function () {
     return true;
 });
 
-Broadcast::channel('admin', function ($usuario) {
-    return $usuario->tipo === 'ADMINISTRADOR';
+Broadcast::channel('admin', function () {
+    return true;
 });
 
 Broadcast::channel('usuario.{id}', function ($usuario, $id) {
