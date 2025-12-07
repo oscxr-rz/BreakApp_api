@@ -22,7 +22,9 @@ class MenuDiarioController extends Controller
                     'id_menu' => $menu->id_menu,
                     'fecha' => $menu->fecha,
                     'activo' => $menu->activo,
-                    'productos' => $menu->productos->sortBy('nombre')->groupBy('categoria.nombre')->sortKeys()->map(function ($productos) {
+                    'productos' => $menu->productos->filter(function ($producto) {
+                        return $producto->pivot->cantidad_disponible > 0;
+                    })->sortBy('nombre')->groupBy('categoria.nombre')->sortKeys()->map(function ($productos) {
                         return $productos->map(function ($producto) {
                             return [
                                 'id_producto' => $producto->id_producto,
