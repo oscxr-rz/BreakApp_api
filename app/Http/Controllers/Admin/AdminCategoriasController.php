@@ -56,7 +56,7 @@ class AdminCategoriasController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
-                broadcast(new ActualizarCategoria($categoria->toArray()));
+                broadcast(new ActualizarCategoria($categoria->id_categoria));
 
                 return response()->json([
                     'success' => true,
@@ -97,7 +97,7 @@ class AdminCategoriasController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
-                broadcast(new ActualizarCategoria($categoria->toArray()));
+                broadcast(new ActualizarCategoria($categoria->id_categoria));
 
                 return response()->json([
                     'success' => true,
@@ -133,7 +133,7 @@ class AdminCategoriasController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
-                broadcast(new ActualizarCategoria($categoria->toArray()));
+                broadcast(new ActualizarCategoria($categoria->id_categoria));
 
                 return response()->json([
                     'success' => true,

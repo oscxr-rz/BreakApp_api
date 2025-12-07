@@ -33,6 +33,7 @@ class OrdenController extends Controller
                         'estado' => $orden->estado,
                         'total' => $orden->total,
                         'metodo_pago' => $orden->metodo_pago,
+                        'pagado' => $orden->pagado,
                         'imagen_url' => $orden->imagen_url,
                         'hora_recogida' => $orden->hora_recogida,
                         'productos' => $orden->productos->map(function ($producto) {
@@ -111,11 +112,9 @@ class OrdenController extends Controller
 
                 $orden->refresh();
 
-                $menuActualizado = Menu::with('productos')
-                    ->find($request->id_menu);
-
-                broadcast(new ActualizarMenu($menuActualizado->toArray()));
-                broadcast(new ActualizarCarrito($id, $orden->toArray()));
+                broadcast(new ActualizarMenu($request->id_menu));
+                broadcast(new ActualizarCarrito($id, $orden->id_orden));
+                broadcast(new ActualizarOrden($id, $orden->id_orden));
 
                 return response()->json([
                     'success' => true,
@@ -158,6 +157,7 @@ class OrdenController extends Controller
             'estado' => 'PENDIENTE',
             'total' => $total,
             'metodo_pago' => $data['metodo_pago'],
+            'pagado' => $data['metodo_pago'] === 'EFECTIVO' ? 0 : 1,
             'oculto' => 0,
             'hora_recogida' => $data['hora_recogida'],
             'fecha_creacion' => now(),
@@ -290,7 +290,7 @@ class OrdenController extends Controller
                     'ultima_actualizacion' => now()
                 ]);
 
-                broadcast(new ActualizarOrden($id, $orden));
+                broadcast(new ActualizarOrden($id, $orden->id_orden));
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden oculta correctamente',

@@ -33,16 +33,16 @@ class CarritoController extends Controller
                                 });
 
                                 $activoAhora = $menuHoy ? $menuHoy->activo : 0;
-                                
+
                                 $disponible = false;
                                 $cantidadDisponible = null;
 
                                 if ($menuHoy) {
                                     $productoEnMenu = $menuHoy->productos->firstWhere('id_producto', $producto->id_producto);
-                                    $disponible = $productoEnMenu 
-                                        ? $productoEnMenu->pivot->cantidad_disponible >= $producto->pivot->cantidad 
+                                    $disponible = $productoEnMenu
+                                        ? $productoEnMenu->pivot->cantidad_disponible >= $producto->pivot->cantidad
                                         : false;
-                                    
+
                                     $cantidadDisponible = $productoEnMenu ? $productoEnMenu->pivot->cantidad_disponible : null;
                                 }
 
@@ -104,7 +104,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
+                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
 
                 return response()->json([
                     'success' => true,
@@ -164,7 +164,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
+                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
 
                 return response()->json([
                     'success' => true,
@@ -222,7 +222,7 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->toArray()));
+                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
 
                 return response()->json([
                     'success' => true,

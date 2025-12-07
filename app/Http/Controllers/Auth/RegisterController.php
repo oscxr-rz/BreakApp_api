@@ -22,7 +22,7 @@ class RegisterController extends Controller
                 'email' => 'required|email',
                 'telefono' => 'required|numeric|min_digits:10,max_digits:10',
                 'password' => 'required|string|min:6',
-                'tipo' => 'required|string',
+                'tipo' => 'required|string|in:ALUMNO,DIRECTIVO,ADMINISTRADOR',
                 'grupo' => 'nullable|string',
                 'imagen_url' => 'nullable|string'
             ]);

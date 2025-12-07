@@ -52,7 +52,7 @@ class AdminProductosController extends Controller
                 'nombre' => 'required|string|unique:producto,nombre',
                 'descripcion' => 'required|string',
                 'precio' => 'required|numeric',
-                'tiempo_preparacion' => 'nullable|date_format:H:i',
+                'tiempo_preparacion' => 'nullable|integer|min:0',
                 'imagen_url' => 'required|url',
                 'activo' => 'nullable|integer|min:0|max:1'
             ]);
@@ -72,6 +72,8 @@ class AdminProductosController extends Controller
 
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
+
+                broadcast(new ActualizarProducto($producto->id_proucto));
 
                 return response()->json([
                     'success' => true,
@@ -105,7 +107,7 @@ class AdminProductosController extends Controller
                 ],
                 'descripcion' => 'required|string',
                 'precio' => 'required|numeric',
-                'tiempo_preparacion' => 'nullable|date_format:H:i',
+                'tiempo_preparacion' => 'nullable|integer|min:0',
                 'imagen_url' => 'required|url'
             ]);
 
@@ -123,6 +125,8 @@ class AdminProductosController extends Controller
 
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
+
+                broadcast(new ActualizarProducto($producto->id_proucto));
 
                 return response()->json([
                     'success' => true,
@@ -157,7 +161,7 @@ class AdminProductosController extends Controller
                 Cache::forget('productos_agrupados');
                 Cache::forget('menus_agrupados');
 
-                broadcast(new ActualizarProducto($producto->toArray()));
+                broadcast(new ActualizarProducto($producto->id_proucto));
 
                 return response()->json([
                     'success' => true,

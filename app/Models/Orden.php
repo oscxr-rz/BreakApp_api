@@ -16,6 +16,7 @@ class Orden extends Model
         'total',
         'metodo_pago',
         'imagen_url',
+        'pagado',
         'oculto',
         'hora_recogida',
         'fecha_creacion',

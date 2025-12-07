@@ -15,11 +15,11 @@ class ActualizarOrden implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
     
     public $idUsuario;
-    public $ordenes;
-    public function __construct($idUsuario, $ordenes)
+    public $orden;
+    public function __construct($idUsuario, $orden)
     {
         $this->idUsuario = $idUsuario;
-        $this->ordenes = $ordenes;
+        $this->orden = $orden;
     }
 
     public function broadcastOn()
@@ -29,7 +29,7 @@ class ActualizarOrden implements ShouldBroadcast
 
     public function broadcastWith() {
         return [
-            'ordenes' => $this->ordenes
+            'ordenes' => $this->orden
         ];
     }
 }
