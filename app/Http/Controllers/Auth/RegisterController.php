@@ -20,7 +20,7 @@ class RegisterController extends Controller
                 'nombre' => 'required|string',
                 'apellido' => 'required|string',
                 'email' => 'required|email',
-                'telefono' => 'required|numeric|min_digits:10,max_digits:10',
+                'telefono' => 'required|numeric|min_digits:10|max_digits:10',
                 'password' => 'required|string|min:6',
                 'tipo' => 'required|string|in:ALUMNO,DIRECTIVO,ADMINISTRADOR',
                 'grupo' => 'nullable|string',
