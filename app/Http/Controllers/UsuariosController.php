@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UsuariosController extends Controller
@@ -14,7 +15,7 @@ class UsuariosController extends Controller
     public function show(int $id)
     {
         try {
-            $usuario = Usuario::select('id_usuario','nombre','apellido','email','telefono','tipo','grupo','imagen_url')->with('tarjetaLocal:id_tarjeta_local,id_usuario,saldo')->findOrFail($id);
+            $usuario = Usuario::select('id_usuario', 'nombre', 'apellido', 'email', 'telefono', 'tipo', 'grupo', 'imagen_url')->with('tarjetaLocal:id_tarjeta_local,id_usuario,saldo')->findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -80,14 +81,16 @@ class UsuariosController extends Controller
     {
         try {
             $request->validate([
-                'imagen_url' => 'required|url'
+                'imagen' => 'required|file|image|mimes:jpg,png|max:4096'
             ]);
 
             return DB::transaction(function () use ($request, $id) {
                 $usuario = Usuario::where('activo', 1)->findOrFail($id);
 
+                $imagenUrl = $this->actualizarImg($request->file('imagen'), $id, $usuario->imagen_url);
+
                 $usuario->update([
-                    'imagen_url' => $request->imagen_url,
+                    'imagen_url' => $imagenUrl,
                     'ultima_actualizacion' => now()
                 ]);
 
@@ -100,9 +103,27 @@ class UsuariosController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actulizar imagen'
+                'message' => 'Error al actualizar imagen: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function actualizarImg($imagen, $idUsuario, $imagenAnterior = null)
+    {
+        if ($imagenAnterior) {
+            $rutaAnterior = str_replace(asset('storage/'), '', $imagenAnterior);
+            Storage::disk('public')->delete($rutaAnterior);
+        }
+
+        $extension = $imagen->getClientOriginalExtension();
+        $nombre = $idUsuario . '_' . time() . '.' . $extension;
+        $path = 'user/img/' . $idUsuario . '/' . $nombre;
+
+        Storage::disk('public')->put($path, file_get_contents($imagen));
+
+        $imagenUrl = asset('storage/' . $path);
+
+        return $imagenUrl;
     }
 
     public function updatePassword(Request $request, int $id)

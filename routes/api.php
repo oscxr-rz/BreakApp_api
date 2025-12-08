@@ -26,7 +26,7 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
     //Usuario
     Route::get('/{id}', [UsuariosController::class, 'show']);
     Route::put('/{id}', [UsuariosController::class, 'update']);
-    Route::patch('/{id}/imagen', [UsuariosController::class, 'updateImagen']);
+    Route::post('/{id}/imagen', [UsuariosController::class, 'updateImagen']);
     Route::patch('/{id}/password', [UsuariosController::class, 'updatePassword']);
     Route::patch('/{id}/desactivar', [UsuariosController::class, 'desactivar']);
 
