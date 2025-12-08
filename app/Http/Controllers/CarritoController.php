@@ -104,8 +104,6 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
-
                 return response()->json([
                     'success' => true,
                     'message' => 'Producto agregado correctamente',
@@ -164,8 +162,6 @@ class CarritoController extends Controller
 
                 $carrito->refresh();
 
-                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
-
                 return response()->json([
                     'success' => true,
                     'message' => 'Producto eliminado correctamente',
@@ -221,8 +217,6 @@ class CarritoController extends Controller
                 $carritoProducto = $this->eliminarCarritoProducto($carrito->id_carrito, $request->id_producto);
 
                 $carrito->refresh();
-
-                broadcast(new ActualizarCarrito($id, $carrito->id_carrito));
 
                 return response()->json([
                     'success' => true,

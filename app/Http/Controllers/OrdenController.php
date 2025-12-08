@@ -113,7 +113,6 @@ class OrdenController extends Controller
                 $orden->refresh();
 
                 broadcast(new ActualizarMenu($request->id_menu));
-                broadcast(new ActualizarCarrito($id, $orden->id_orden));
                 broadcast(new ActualizarOrden($id, $orden->id_orden));
 
                 return response()->json([
