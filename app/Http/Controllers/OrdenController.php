@@ -15,6 +15,7 @@ use App\Models\TarjetaLocal;
 use App\Models\Transaccion;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -114,6 +115,8 @@ class OrdenController extends Controller
 
                 broadcast(new ActualizarMenu($request->id_menu));
                 broadcast(new ActualizarOrden($id, $orden->id_orden));
+
+                Cache::forget('menu_diario');
 
                 return response()->json([
                     'success' => true,
