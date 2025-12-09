@@ -11,42 +11,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class RegisterController extends Controller
+class LoginGoogleController extends Controller
 {
-    public function register(Request $request)
+    public function login(Request $request)
     {
         try {
             $request->validate([
-                'nombre' => 'required|string',
-                'apellido' => 'required|string',
                 'email' => 'required|email',
-                'telefono' => 'required|numeric|min_digits:10|max_digits:10',
-                'password' => 'required|string|min:6',
-                'tipo' => 'required|string|in:ALUMNO,DIRECTIVO,ADMINISTRADOR',
-                'grupo' => 'nullable|string'
+                'nombre' => 'required|string',
+                'apellido' => 'required|string'
             ]);
 
             return DB::transaction(function () use ($request) {
-                $usuarioExiste = Usuario::where(function ($query) use ($request) {
-                    $query->where('email', $request->email)
-                        ->orWhere('telefono', $request->telefono);
-                })->where('activo', 1)->exists();
+                $usuario = Usuario::where('email', $request->email)->where('activo', 1)->first();
 
-                if ($usuarioExiste) {
+                if ($usuario) {
+                    $token = $usuario->createToken('api_token')->plainTextToken;
+
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Ya existe un usuario con estos datos',
-                    ], 409);
+                        'success' => true,
+                        'message' => 'Inicio de sesión exitoso',
+                        'data' => $usuario,
+                        'token' => $token
+                    ], 200);
                 }
 
                 $usuario = Usuario::create([
                     'nombre' => $request->nombre,
                     'apellido' => $request->apellido,
                     'email' => $request->email,
-                    'telefono' => $request->telefono,
-                    'password' => Hash::make($request->password),
-                    'tipo' => $request->tipo,
-                    'grupo' => $request->grupo ?? null,
+                    'tipo' => 'ALUMNO',
                     'activo' => 1,
                     'fecha_registro' => now(),
                     'ultima_actualizacion' => now()
@@ -78,7 +72,7 @@ class RegisterController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al registrar el usuario'
+                'message' => 'Error al iniciar sesión'
             ], 500);
         }
     }

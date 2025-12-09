@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminCategoriasController;
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LoginGoogleController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Broadcasting\AuthController;
@@ -19,6 +20,7 @@ Route::post('/broadcasting/auth', [AuthController::class, 'authenticate']);
 //Usuario
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/login/google', [LoginGoogleController::class, 'login']);
 Route::get('/logout', [LogoutController::class, 'logout'])->middleware('auth:sanctum');
 
 //Usuarios

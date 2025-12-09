@@ -17,6 +17,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -253,7 +254,7 @@ class OrdenController extends Controller
     {
         Orden::where('id_orden', $idOrden)
             ->update([
-                'codigo_qr' => $qr,
+                'codigo_qr' => Hash::make($qr),
                 'imagen_url' => $imagenUrl
             ]);
     }
