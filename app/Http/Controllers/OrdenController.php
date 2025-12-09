@@ -27,7 +27,7 @@ class OrdenController extends Controller
     public function show(int $id)
     {
         try {
-            $ordenes = Orden::where('oculto', 0)->with('productos')->where('id_usuario', $id)->orderBy('id_orden')->get()
+            $ordenes = Orden::where('oculto', 0)->with('productos')->where('id_usuario', $id)->orderByDesc('id_orden')->get()
                 ->map(function ($orden) {
                     return [
                         'id_orden' => $orden->id_orden,
