@@ -40,4 +40,9 @@ class Usuario extends Authenticatable
     {
         return $this->hasOne(TarjetaLocal::class, 'id_usuario', 'id_usuario');
     }
+
+    public function ordenes()
+    {
+        return $this->hasMany(Orden::class, 'id_usuario', 'id_usuario');
+    }
 }

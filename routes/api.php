@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminCategoriasController;
 use App\Http\Controllers\Admin\AdminMenuController;
+use App\Http\Controllers\Admin\AdminOrdenesController;
 use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginGoogleController;
@@ -82,5 +83,9 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::post('/', [AdminMenuController::class, 'store']);
         Route::put('/{id}', [AdminMenuController::class, 'update']);
         Route::patch('/{id}/estado', [AdminMenuController::class, 'cambiarEstado']);
+    });
+
+    Route::prefix('ordenes')->group(function () {
+        Route::get('/', [AdminOrdenesController::class, 'index']);
     });
 });

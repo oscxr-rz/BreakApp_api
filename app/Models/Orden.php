@@ -25,6 +25,11 @@ class Orden extends Model
 
     public $timestamps = false;
 
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'id_usuario', 'id_usuario');
+    }
+
     public function productos()
     {
         return $this->belongsToMany(Producto::class, 'orden_detalle', 'id_orden', 'id_producto')
