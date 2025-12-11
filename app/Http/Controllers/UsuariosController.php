@@ -117,7 +117,7 @@ class UsuariosController extends Controller
 
         $extension = $imagen->getClientOriginalExtension();
         $nombre = $idUsuario . '_' . time() . '.' . $extension;
-        $path = 'user/img/' . $idUsuario . '/' . $nombre;
+        $path = 'usuario/img/' . $idUsuario . '/' . $nombre;
 
         Storage::disk('public')->put($path, file_get_contents($imagen));
 

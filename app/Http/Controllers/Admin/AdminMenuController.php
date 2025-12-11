@@ -62,7 +62,6 @@ class AdminMenuController extends Controller
         try {
             $request->validate([
                 'fecha' => 'required|date|unique:menu,fecha',
-                'activo' => 'required|integer|min:0|max:1',
                 'productos' => 'required|array|min:1',
                 'productos.*.id_producto' => [
                     'required',
@@ -85,7 +84,7 @@ class AdminMenuController extends Controller
             return DB::transaction(function () use ($request) {
                 $menu = Menu::create([
                     'fecha' => $request->fecha,
-                    'activo' => $request->activo,
+                    'activo' => 1,
                     'fecha_creacion' => now(),
                     'ultima_actualizacion' => now(),
                     'fecha_eliminacion' => $request->activo == 0 ? now() : null

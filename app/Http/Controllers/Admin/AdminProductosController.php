@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AdminProductosController extends Controller
@@ -53,18 +54,20 @@ class AdminProductosController extends Controller
                 'descripcion' => 'required|string',
                 'precio' => 'required|numeric',
                 'tiempo_preparacion' => 'nullable|integer|min:0',
-                'imagen_url' => 'required|url',
+                'imagen' => 'required|image|mimes:jpg,png|max:4096',
                 'activo' => 'nullable|integer|min:0|max:1'
             ]);
 
             return DB::transaction(function () use ($request) {
+                $imagenUrl = $this->img($request->file('imagen'), $request->nombre);
+
                 $producto = Producto::create([
                     'id_categoria' => $request->id_categoria,
                     'nombre' => $request->nombre,
                     'descripcion' => $request->descripcion,
                     'precio' => $request->precio,
                     'tiempo_preparacion' => $request->tiempo_preparacion ?? null,
-                    'imagen_url' => $request->imagen_url,
+                    'imagen_url' => $imagenUrl,
                     'activo' => $request->activo ?? 1,
                     'fecha_creacion' => now(),
                     'ultima_actualizacion' => now()
@@ -108,11 +111,16 @@ class AdminProductosController extends Controller
                 'descripcion' => 'required|string',
                 'precio' => 'required|numeric',
                 'tiempo_preparacion' => 'nullable|integer|min:0',
-                'imagen_url' => 'required|url'
+                'imagen' => 'nullable|image|mimes:jpg,png|max:4096'
             ]);
 
             return DB::transaction(function () use ($request, $id) {
                 $producto = Producto::findOrFail($id);
+
+                $imagenUrl = $producto->imagen_url;
+                if ($request->hasFile('imagen')) {
+                    $imagenUrl = $this->img($request->file('imagen'), $request->nombre, $producto->imagen_url);
+                }
 
                 $producto->update([
                     'id_categoria' => $request->id_categoria,
@@ -120,6 +128,7 @@ class AdminProductosController extends Controller
                     'descripcion' => $request->descripcion,
                     'precio' => $request->precio,
                     'tiempo_preparacion' => $request->tiempo_preparacion ?? $producto->tiempo_preparacion,
+                    'imagen_url' => $imagenUrl,
                     'ultima_actualizacion' => now()
                 ]);
 
@@ -175,5 +184,23 @@ class AdminProductosController extends Controller
                 'message' => 'Error al cambiar el estado de el producto'
             ], 500);
         }
+    }
+
+    private function img($imagen, $nombreProducto, $imagenAnterior = null)
+    {
+        if ($imagenAnterior) {
+            $rutaAnterior = str_replace(asset('storage/'), '', $imagenAnterior);
+            Storage::disk('public')->delete($rutaAnterior);
+        }
+
+        $extension = $imagen->getClientOriginalExtension();
+        $nombre = $nombreProducto . '_' . time() . '.' . $extension;
+        $path = 'productos/img/' . $nombre;
+
+        Storage::disk('public')->put($path, file_get_contents($imagen));
+
+        $imagenUrl = asset('storage/' . $path);
+
+        return $imagenUrl;
     }
 }
