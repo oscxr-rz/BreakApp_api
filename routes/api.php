@@ -77,7 +77,7 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::patch('/{id}/estado', [AdminProductosController::class, 'cambiarEstado']);
     });
 
-    //Menus
+    //Menús
     Route::prefix('/menus')->group(function () {
         Route::get('/', [AdminMenuController::class, 'index']);
         Route::post('/', [AdminMenuController::class, 'store']);
@@ -85,7 +85,9 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::patch('/{id}/estado', [AdminMenuController::class, 'cambiarEstado']);
     });
 
+    //Ordenes
     Route::prefix('ordenes')->group(function () {
         Route::get('/', [AdminOrdenesController::class, 'index']);
+        Route::patch('/{id}/estado', [AdminOrdenesController::class, 'cambiarEstado']);
     });
 });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Orden;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminOrdenesController extends Controller
 {
@@ -18,6 +19,7 @@ class AdminOrdenesController extends Controller
                         ->orWhere('estado', 'PREPARANDO');
                 })
                 ->with('productos', 'usuario')
+                ->orderBy('hora_recogida', 'asc')
                 ->orderBy('id_orden', 'asc')
                 ->get()
                 ->map(function ($orden) {
@@ -51,6 +53,34 @@ class AdminOrdenesController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al mostrar ordenes'
+            ], 500);
+        }
+    }
+
+    public function cambiarEstado(int $id, Request $request)
+    {
+        try {
+            $request->validate([
+                'estado' => 'required|string|in:PREPARANDO,LISTO'
+            ]);
+
+            return DB::transaction(function () use ($id, $request) {
+
+                $orden = Orden::findOrFail($id);
+                $orden->update([
+                    'estado' => $request->estado
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Orden actualizada correctamente',
+                    'data' => $orden
+                ], 200);
+            });
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la orden'
             ], 500);
         }
     }
