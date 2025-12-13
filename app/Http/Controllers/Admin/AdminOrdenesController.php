@@ -89,7 +89,8 @@ class AdminOrdenesController extends Controller
         }
     }
 
-    private function enviarNotificacion($idUsuario, $idOrden, $estado) {
+    private function enviarNotificacion($idUsuario, $idOrden, $estado)
+    {
         $notificacion = Notificacion::create([
             'id_usuario' => $idUsuario,
             'id_orden' => $idOrden,
@@ -101,8 +102,7 @@ class AdminOrdenesController extends Controller
             'oculto' => 0,
             'fecha_creacion' => now()
         ]);
-
-        broadcast(new ActualizarEstadoOrden($idUsuario, $idOrden, $estado));
+        broadcast(new ActualizarEstadoOrden($idUsuario, $idOrden, $estado, $notificacion->titulo));
         return $notificacion;
     }
 }

@@ -18,22 +18,26 @@ class ActualizarEstadoOrden implements ShouldBroadcast
     public $idUsuario;
     public $idOrden;
     public $estado;
-    public function __construct($idUsuario, $idOrden, $estado)
+    public $titulo;
+    public function __construct($idUsuario, $idOrden, $estado, $titulo)
     {
         $this->idUsuario = $idUsuario;
         $this->idOrden = $idOrden;
         $this->estado = $estado;
+        $this->titulo = $titulo;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('usuario.'.$this->idUsuario);
+        return new PrivateChannel('usuario.' . $this->idUsuario);
     }
 
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         return [
             'idOrden' => $this->idOrden,
-            'estado' => $this->estado
+            'estado' => $this->estado,
+            'titulo' => $this->titulo
         ];
     }
 }
