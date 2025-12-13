@@ -25,7 +25,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class OrdenController extends Controller
 {
-    public function show(int $id)
+    public function index(int $id)
     {
         try {
             $ordenes = Orden::where('oculto', 0)->with('productos')->where('id_usuario', $id)->orderByDesc('id_orden')->get()

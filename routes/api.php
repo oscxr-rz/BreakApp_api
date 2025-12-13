@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Broadcasting\AuthController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\MenuDiarioController;
+use App\Http\Controllers\NotificacionesController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\TarjetaLocalController;
 use App\Http\Controllers\UsuariosController;
@@ -48,9 +49,14 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
 
     //Ordenes
     Route::prefix('/orden')->group(function () {
-        Route::get('/{id}', [OrdenController::class, 'show']);
+        Route::get('/{id}', [OrdenController::class, 'index']);
         Route::post('/{id}', [OrdenController::class, 'store']);
         Route::patch('/{id}/ocultar', [OrdenController::class, 'ocultar']);
+    });
+
+    //Notificaciones
+    Route::prefix('notificacion')->group(function () {
+        Route::get('/{id}', [NotificacionesController::class, 'index']);
     });
 });
 

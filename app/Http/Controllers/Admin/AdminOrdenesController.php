@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ActualizarEstadoOrden;
 use App\Http\Controllers\Controller;
+use App\Models\Notificacion;
 use App\Models\Orden;
 use Exception;
 use Illuminate\Http\Request;
@@ -71,6 +73,8 @@ class AdminOrdenesController extends Controller
                     'estado' => $request->estado
                 ]);
 
+                $this->enviarNotificacion($orden->id_usuario, $orden->id_orden, $orden->estado);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden actualizada correctamente',
@@ -83,5 +87,22 @@ class AdminOrdenesController extends Controller
                 'message' => 'Error al actualizar la orden'
             ], 500);
         }
+    }
+
+    private function enviarNotificacion($idUsuario, $idOrden, $estado) {
+        $notificacion = Notificacion::create([
+            'id_usuario' => $idUsuario,
+            'id_orden' => $idOrden,
+            'tipo' => 'ORDEN',
+            'titulo' => 'Se ha actualizado tu orden!',
+            'mensaje' => "Tu orden con ID:{$idOrden} se ha actualizado a {$estado}",
+            'canal' => 'PUSH',
+            'leido' => 0,
+            'oculto' => 0,
+            'fecha_creacion' => now()
+        ]);
+
+        broadcast(new ActualizarEstadoOrden($idUsuario, $idOrden, $estado));
+        return $notificacion;
     }
 }
