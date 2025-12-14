@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\ActualizarCarrito;
 use App\Events\ActualizarMenu;
 use App\Events\ActualizarOrden;
+use App\Events\Admin\ActualizarOrdenes;
 use App\Models\Carrito;
 use App\Models\CarritoProducto;
 use App\Models\Menu;
@@ -115,7 +116,7 @@ class OrdenController extends Controller
                 $orden->refresh();
 
                 broadcast(new ActualizarMenu($request->id_menu));
-                broadcast(new ActualizarOrden($id, $orden->id_orden));
+                broadcast(new ActualizarOrdenes($orden->id_orden));
 
                 Cache::forget('menu_diario');
 
@@ -292,8 +293,7 @@ class OrdenController extends Controller
                     'oculto' => 1,
                     'ultima_actualizacion' => now()
                 ]);
-
-                broadcast(new ActualizarOrden($id, $orden->id_orden));
+                
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden oculta correctamente',

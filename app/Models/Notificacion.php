@@ -19,7 +19,8 @@ class Notificacion extends Model
         'canal',
         'leido',
         'oculto',
-        'fecha_creacion'
+        'fecha_creacion',
+        'ultima_actualizacion'
     ];
 
     public $timestamps = false;

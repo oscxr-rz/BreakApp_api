@@ -57,6 +57,7 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
     //Notificaciones
     Route::prefix('notificacion')->group(function () {
         Route::get('/{id}', [NotificacionesController::class, 'index']);
+        Route::patch('/{id}/ocultar', [NotificacionesController::class, 'ocultar']);
     });
 });
 

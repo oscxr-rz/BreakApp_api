@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\ActualizarEstadoOrden;
+use App\Events\Admin\ActualizarOrdenes;
 use App\Http\Controllers\Controller;
 use App\Models\Notificacion;
 use App\Models\Orden;
@@ -21,6 +22,7 @@ class AdminOrdenesController extends Controller
                         ->orWhere('estado', 'PREPARANDO');
                 })
                 ->with('productos', 'usuario')
+                ->orderByRaw("CASE WHEN estado = 'PREPARANDO' THEN 0 ELSE 1 END")
                 ->orderBy('hora_recogida', 'asc')
                 ->orderBy('id_orden', 'asc')
                 ->get()
@@ -74,6 +76,7 @@ class AdminOrdenesController extends Controller
                 ]);
 
                 $this->enviarNotificacion($orden->id_usuario, $orden->id_orden, $orden->estado);
+                broadcast(new ActualizarOrdenes($orden->id_orden));
 
                 return response()->json([
                     'success' => true,
@@ -100,7 +103,8 @@ class AdminOrdenesController extends Controller
             'canal' => 'PUSH',
             'leido' => 0,
             'oculto' => 0,
-            'fecha_creacion' => now()
+            'fecha_creacion' => now(),
+            'ultima_actualizacion' => now()
         ]);
         broadcast(new ActualizarEstadoOrden($idUsuario, $idOrden, $estado, $notificacion->titulo));
         return $notificacion;
