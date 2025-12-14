@@ -6,6 +6,7 @@ use App\Events\ActualizarCarrito;
 use App\Events\ActualizarMenu;
 use App\Events\ActualizarOrden;
 use App\Events\Admin\ActualizarOrdenes;
+use App\Http\Controllers\Actions\TicketsController;
 use App\Models\Carrito;
 use App\Models\CarritoProducto;
 use App\Models\Menu;
@@ -13,7 +14,9 @@ use App\Models\MenuProducto;
 use App\Models\Orden;
 use App\Models\OrdenDetalle;
 use App\Models\TarjetaLocal;
+use App\Models\Ticket;
 use App\Models\Transaccion;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -115,6 +118,8 @@ class OrdenController extends Controller
 
                 $orden->refresh();
 
+                $this->crearTicket($orden->id_orden);
+
                 broadcast(new ActualizarMenu($request->id_menu));
                 broadcast(new ActualizarOrdenes($orden->id_orden));
 
@@ -127,7 +132,7 @@ class OrdenController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la orden'
+                'message' => 'Error al crear la orden'.$e->getMessage()
             ], 500);
         }
     }
@@ -269,6 +274,22 @@ class OrdenController extends Controller
         ]);
     }
 
+    private function crearTicket($idOrden)
+    {
+        $ticket = Ticket::create([
+            'id_orden' => $idOrden,
+            'numero_ticket' => 'TCK',
+            'fecha_creacion' => now(),
+            'ultima_actualizacion' => now()
+        ]);
+
+        $ticket->update([
+            'numero_ticket' => 'TCK-' . now()->format('Y') . '-' . $ticket->id_ticket
+        ]);
+
+        return $ticket;
+    }
+
     public function ocultar(Request $request, int $id)
     {
         try {
@@ -291,7 +312,7 @@ class OrdenController extends Controller
                     'oculto' => 1,
                     'ultima_actualizacion' => now()
                 ]);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden oculta correctamente',

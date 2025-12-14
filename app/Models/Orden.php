@@ -43,4 +43,8 @@ class Orden extends Model
     {
         return $this->hasMany(OrdenDetalle::class, 'id_orden', 'id_orden');
     }
+
+    public function ticket(){
+        return $this->belongsTo(Ticket::class, 'id_orden', 'id_orden');
+    }
 }
