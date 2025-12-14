@@ -11,6 +11,7 @@ class Orden extends Model
     protected $primaryKey = 'id_orden';
     protected $fillable = [
         'id_usuario',
+        'nombre',
         'codigo_qr',
         'estado',
         'total',
@@ -19,6 +20,8 @@ class Orden extends Model
         'pagado',
         'oculto',
         'hora_recogida',
+        'vencido',
+        'fecha_vencimiento',
         'fecha_creacion',
         'ultima_actualizacion'
     ];

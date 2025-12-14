@@ -28,13 +28,37 @@ class NotificacionesController extends Controller
         }
     }
 
+    public function show($id, $idNotificacion)
+    {
+        try {
+            $notificacion = Notificacion::where('oculto', 0)->where('id_usuario', $id)->findOrFail($idNotificacion);
+
+            return DB::transaction(function () use ($notificacion) {
+                $notificacion->update([
+                    'leido' => 1
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Notificacion mostrada correctamente',
+                    'data' => $notificacion
+                ], 200);
+            });
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al mostrar la notificacion'
+            ], 500);
+        }
+    }
+
     public function ocultar(Request $request, int $id)
     {
         try {
             $request->validate([
                 'id_notificacion' => 'required|integer|exists:notificacion,id_notificacion'
             ]);
-            
+
             $notificacion = Notificacion::where('id_usuario', $id)->findOrFail($request->id_notificacion);
 
             if ($notificacion->leido !== 1) {

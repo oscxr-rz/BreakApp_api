@@ -57,6 +57,7 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
     //Notificaciones
     Route::prefix('notificacion')->group(function () {
         Route::get('/{id}', [NotificacionesController::class, 'index']);
+        Route::get('/{id}/{idNotificacion}', [NotificacionesController::class, 'show']);
         Route::patch('/{id}/ocultar', [NotificacionesController::class, 'ocultar']);
     });
 });
@@ -95,6 +96,7 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
     //Ordenes
     Route::prefix('ordenes')->group(function () {
         Route::get('/', [AdminOrdenesController::class, 'index']);
+        Route::post('/', [AdminOrdenesController::class, 'registrarOrden']);
         Route::patch('/{id}/estado', [AdminOrdenesController::class, 'cambiarEstado']);
     });
 });

@@ -118,8 +118,6 @@ class OrdenController extends Controller
                 broadcast(new ActualizarMenu($request->id_menu));
                 broadcast(new ActualizarOrdenes($orden->id_orden));
 
-                Cache::forget('menu_diario');
-
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden creada correctamente',
