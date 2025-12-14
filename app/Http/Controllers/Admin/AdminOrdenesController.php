@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Events\ActualizarEstadoOrden;
 use App\Events\ActualizarMenu;
 use App\Events\Admin\ActualizarOrdenes;
-use App\Http\Controllers\Actions\TicketsController;
 use App\Http\Controllers\Controller;
 use App\Models\MenuProducto;
 use App\Models\Notificacion;
@@ -21,7 +20,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class AdminOrdenesController extends TicketsController
+class AdminOrdenesController extends Controller
 {
     public function index()
     {
@@ -250,7 +249,6 @@ class AdminOrdenesController extends TicketsController
                 ]);
 
                 $this->enviarNotificacion($orden->id_usuario, $orden->id_orden, $orden->estado);
-                $this->generarTicketPDF($orden->id_orden);
 
                 broadcast(new ActualizarOrdenes($orden->id_orden));
 

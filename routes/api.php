@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Actions\TicketsController;
 use App\Http\Controllers\Admin\AdminCategoriasController;
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminOrdenesController;
@@ -60,6 +61,11 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
         Route::get('/{id}/{idNotificacion}', [NotificacionesController::class, 'show']);
         Route::patch('/{id}/ocultar', [NotificacionesController::class, 'ocultar']);
     });
+});
+
+//Tickets
+Route::middleware('auth:sanctum')->prefix('/ticket')->group(function () {
+    Route::post('/{id}/enviar', [TicketsController::class, 'enviarTicket']);
 });
 
 //Menú diario

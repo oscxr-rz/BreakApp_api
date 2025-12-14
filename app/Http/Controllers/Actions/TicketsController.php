@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Actions;
 
 use App\Http\Controllers\Controller;
+use App\Mail\actions\enviarTicket;
 use App\Models\Orden;
+use App\Models\Ticket;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class TicketsController extends Controller
@@ -19,7 +24,7 @@ class TicketsController extends Controller
 
         $datosApp = [
             'nombre' => config('app.name', 'Mi Aplicación'),
-            'correo' => config('app.email', 'contacto@miapp.com'),
+            'correo' => env('MAIL_USERNAME'),
             'sitio_web' => config('app.url', 'www.miapp.com')
         ];
 
@@ -51,5 +56,42 @@ class TicketsController extends Controller
         ]);
 
         return $orden;
+    }
+
+    public function enviarTicket(int $id, Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email'
+            ]);
+
+            $orden = Orden::findOrFail($id);
+
+            return DB::transaction(function () use ($orden, $request) {
+                $ticket = $orden->ticket;
+                $pdfUrl = $ticket->pdf_url;
+                $pdf = str_replace(asset('storage/'), '', $pdfUrl);
+
+                if (!$ticket) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Ticket no encontrado'
+                    ], 404);
+                }
+
+                Mail::to($request->email)->send(new enviarTicket($ticket, $pdf));
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ticket enviado correctamente a ' . $request->email,
+                    'data' => $ticket
+                ], 200);
+            });
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el ticket'
+            ], 500);
+        }
     }
 }

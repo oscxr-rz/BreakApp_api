@@ -132,7 +132,7 @@ class OrdenController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la orden'.$e->getMessage()
+                'message' => 'Error al crear la orden' . $e->getMessage()
             ], 500);
         }
     }
