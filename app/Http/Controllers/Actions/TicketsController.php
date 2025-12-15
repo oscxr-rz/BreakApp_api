@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TicketsController extends Controller
 {
-    public function generarTicketPdf($idOrden)
+    public function generarTicketPdf($idOrden, ?string $email = null, ?string $nombreCliente = null)
     {
         $orden = Orden::with(['usuario', 'ticket', 'productos'])->findOrFail($idOrden);
 
@@ -28,9 +28,19 @@ class TicketsController extends Controller
             'sitio_web' => config('app.url', 'www.miapp.com')
         ];
 
+        if($nombreCliente && $email){
+            $usuarioDatos = [
+                'nombre' => $nombreCliente,
+                'apellido' => ' ',
+                'email' => $email
+            ];
+
+            $usuario = (object) $usuarioDatos;
+        }
+
         $pdf = Pdf::loadView('tickets.orden-pdf', [
             'orden' => $orden,
-            'usuario' => $orden->usuario,
+            'usuario' => $usuario ?? $orden->usuario,
             'ticket' => $orden->ticket,
             'qr' => $qr,
             'datosApp' => $datosApp

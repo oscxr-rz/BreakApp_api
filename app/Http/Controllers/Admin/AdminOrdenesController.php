@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Events\ActualizarEstadoOrden;
 use App\Events\ActualizarMenu;
 use App\Events\Admin\ActualizarOrdenes;
+use App\Http\Controllers\Actions\TicketsController;
 use App\Http\Controllers\Controller;
 use App\Models\MenuProducto;
 use App\Models\Notificacion;
 use App\Models\Orden;
 use App\Models\OrdenDetalle;
+use App\Models\Ticket;
 use App\Models\Transaccion;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,9 +20,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use phpDocumentor\Reflection\DocBlock\Tags\Extends_;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class AdminOrdenesController extends Controller
+class AdminOrdenesController extends TicketsController
 {
     public function index()
     {
@@ -77,6 +80,7 @@ class AdminOrdenesController extends Controller
                 'tipo' => 'required|in:COMPRA,CAPTURA',
                 'id_menu' => 'nullable|integer|exists:menu,id_menu',
                 'nombre' => 'nullable|string',
+                'email' => 'nullable|email',
                 'estado' => 'required|string|in:PENDIENTE,ENTREGADO',
                 'productos' => 'required|array|min:1',
                 'productos.*.id_producto' => [
@@ -107,6 +111,8 @@ class AdminOrdenesController extends Controller
                 $orden->refresh();
 
                 if ($request->tipo === 'COMPRA') {
+                    $this->crearTicket($orden->id_orden);
+                    $this->generarTicketPdf($orden->id_orden, $request->email, $request->nombre);
                     broadcast(new ActualizarMenu($request->id_menu));
                     broadcast(new ActualizarOrdenes($orden->id_orden));
                 }
@@ -232,6 +238,23 @@ class AdminOrdenesController extends Controller
             'tipo' => 'COMPRA',
             'fecha_creacion' => now()
         ]);
+    }
+
+
+    private function crearTicket($idOrden)
+    {
+        $ticket = Ticket::create([
+            'id_orden' => $idOrden,
+            'numero_ticket' => 'TCK',
+            'fecha_creacion' => now(),
+            'ultima_actualizacion' => now()
+        ]);
+
+        $ticket->update([
+            'numero_ticket' => 'TCK-' . now()->format('Y') . '-' . $ticket->id_ticket
+        ]);
+
+        return $ticket;
     }
 
     public function cambiarEstado(int $id, Request $request)

@@ -351,10 +351,6 @@
                 <span class="info-label">Numero Ticket:</span>
                 <span class="info-value">{{ $ticket->numero_ticket }}</span>
             </div>
-            <div class="info-row">
-                <span class="info-label">Estado:</span>
-                <span class="info-value">{{ strtoupper($orden->estado) }}</span>
-            </div>
         </div>
 
         <!-- INFORMACIÓN DEL USUARIO -->
@@ -370,7 +366,7 @@
                     <span class="info-value" style="font-size: 7px;">{{ $usuario->email }}</span>
                 </div>
             @endif
-            @if ($usuario->telefono)
+            @if (!empty($usuario->telefono))
                 <div class="info-row">
                     <span class="info-label">Telefono:</span>
                     <span class="info-value">{{ $usuario->telefono }}</span>

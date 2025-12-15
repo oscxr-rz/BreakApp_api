@@ -27,7 +27,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class OrdenController extends Controller
+class OrdenController extends TicketsController
 {
     public function index(int $id)
     {
@@ -120,6 +120,10 @@ class OrdenController extends Controller
 
                 $this->crearTicket($orden->id_orden);
 
+                if ($request->metodo_pago === 'SALDO') {
+                    $this->generarTicketPdf($orden->id_orden);
+                }
+
                 broadcast(new ActualizarMenu($request->id_menu));
                 broadcast(new ActualizarOrdenes($orden->id_orden));
 
@@ -132,7 +136,7 @@ class OrdenController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la orden' . $e->getMessage()
+                'message' => 'Error al crear la orden'
             ], 500);
         }
     }
