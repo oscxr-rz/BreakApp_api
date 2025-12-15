@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Broadcasting;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Broadcasting\AuthenticateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -41,13 +40,12 @@ class AuthController extends Controller
 
         try {
             $pusher = new Pusher(
-                config('broadcasting.connections.reverb.key'),
-                config('broadcasting.connections.reverb.secret'),
-                config('broadcasting.connections.reverb.app_id'),
+                config('broadcasting.connections.pusher.key'),
+                config('broadcasting.connections.pusher.secret'),
+                config('broadcasting.connections.pusher.app_id'),
                 [
-                    'host' => config('broadcasting.connections.reverb.options.host'),
-                    'port' => config('broadcasting.connections.reverb.options.port'),
-                    'scheme' => config('broadcasting.connections.reverb.options.scheme'),
+                    'cluster' => config('broadcasting.connections.pusher.options.cluster'),
+                    'useTLS' => true
                 ]
             );
 
@@ -56,7 +54,7 @@ class AuthController extends Controller
             return response()->json(json_decode($auth));
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Authorization failed'
+                'message' => 'Authorization failed',
             ], 500);
         }
     }
