@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Actions\TicketsController;
 use App\Http\Controllers\Admin\AdminCategoriasController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminOrdenesController;
 use App\Http\Controllers\Admin\AdminProductosController;
@@ -112,6 +113,11 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
     Route::prefix('/tarjeta-local')->group(function () {
         Route::get('/{id}', [AdminTarjetaLocalController::class, 'show']);
         Route::post('/{id}/recargar', [AdminTarjetaLocalController::class, 'recargar']);
+    });
+
+    //Dashboard
+    Route::prefix('/dashboard')->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index']);
     });
 });
 

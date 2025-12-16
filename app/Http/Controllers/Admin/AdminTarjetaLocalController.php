@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TarjetaLocal;
+use App\Models\Transaccion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +37,10 @@ class AdminTarjetaLocalController extends Controller
             ]);
             $tarjetaLocal = TarjetaLocal::findOrFail($id);
 
-            return DB::transaction(function () use ($tarjetaLocal, $request) {
+            return DB::transaction(function () use ($tarjetaLocal, $request, $id) {
                 $tarjetaLocal->increment('saldo', $request->monto);
+
+                $this->registrarTransaccion($id, $request->monto);
 
                 return response()->json([
                     'success' => true,
@@ -51,5 +54,15 @@ class AdminTarjetaLocalController extends Controller
                 'message' => 'Error al recargar la tarjeta'
             ], 500);
         }
+    }
+
+    private function registrarTransaccion($id, $monto)
+    {
+        Transaccion::create([
+            'id_usuario' => $id,
+            'monto' => $monto,
+            'tipo' => 'RECARGA',
+            'fecha_creacion' => now()
+        ]);
     }
 }
