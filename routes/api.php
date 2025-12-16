@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminOrdenesController;
 use App\Http\Controllers\Admin\AdminProductosController;
 use App\Http\Controllers\Admin\AdminTarjetaLocalController;
+use App\Http\Controllers\Admin\OrdenQRController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginGoogleController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -112,4 +113,11 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
         Route::get('/{id}', [AdminTarjetaLocalController::class, 'show']);
         Route::post('/{id}/recargar', [AdminTarjetaLocalController::class, 'recargar']);
     });
+});
+
+//QR
+Route::prefix('/qr')->group(function () {
+    Route::post('/', [OrdenQRController::class, 'show']);
+    Route::post('/pagar', [OrdenQRController::class, 'pagar']);
+    Route::post('/entregar', [OrdenQRController::class, 'entregar']);
 });

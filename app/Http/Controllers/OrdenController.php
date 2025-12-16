@@ -262,7 +262,7 @@ class OrdenController extends TicketsController
     {
         Orden::where('id_orden', $idOrden)
             ->update([
-                'codigo_qr' => Hash::make($qr),
+                'codigo_qr' => $qr,
                 'imagen_url' => $imagenUrl
             ]);
     }
