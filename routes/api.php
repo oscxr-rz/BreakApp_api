@@ -77,7 +77,7 @@ Route::prefix('/menu')->group(function () {
 });
 
 //Administradores
-Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
+Route::middleware(['auth:sanctum', 'auth.admin'])->prefix('/admin')->group(function () {
     //Categorias
     Route::prefix('/categorias')->group(function () {
         Route::get('/', [AdminCategoriasController::class, 'index']);
