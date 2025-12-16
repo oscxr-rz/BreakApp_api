@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminCategoriasController;
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminOrdenesController;
 use App\Http\Controllers\Admin\AdminProductosController;
+use App\Http\Controllers\Admin\AdminTarjetaLocalController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginGoogleController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -56,7 +57,7 @@ Route::middleware(['auth:sanctum', 'usuario.validar'])->prefix('/usuario')->grou
     });
 
     //Notificaciones
-    Route::prefix('notificacion')->group(function () {
+    Route::prefix('/notificacion')->group(function () {
         Route::get('/{id}', [NotificacionesController::class, 'index']);
         Route::get('/{id}/{idNotificacion}', [NotificacionesController::class, 'show']);
         Route::patch('/{id}/ocultar', [NotificacionesController::class, 'ocultar']);
@@ -76,7 +77,7 @@ Route::prefix('/menu')->group(function () {
 //Administradores
 Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
     //Categorias
-    Route::prefix('categorias')->group(function () {
+    Route::prefix('/categorias')->group(function () {
         Route::get('/', [AdminCategoriasController::class, 'index']);
         Route::post('/', [AdminCategoriasController::class, 'store']);
         Route::put('/{id}', [AdminCategoriasController::class, 'update']);
@@ -100,9 +101,15 @@ Route::middleware('auth:sanctum')->prefix('/admin')->group(function () {
     });
 
     //Ordenes
-    Route::prefix('ordenes')->group(function () {
+    Route::prefix('/ordenes')->group(function () {
         Route::get('/', [AdminOrdenesController::class, 'index']);
         Route::post('/', [AdminOrdenesController::class, 'registrarOrden']);
         Route::patch('/{id}/estado', [AdminOrdenesController::class, 'cambiarEstado']);
+    });
+
+    //Tarjeta Local
+    Route::prefix('/tarjeta-local')->group(function () {
+        Route::get('/{id}', [AdminTarjetaLocalController::class, 'show']);
+        Route::post('/{id}/recargar', [AdminTarjetaLocalController::class, 'recargar']);
     });
 });
