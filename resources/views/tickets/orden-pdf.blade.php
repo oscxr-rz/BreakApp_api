@@ -332,12 +332,6 @@
                 <span class="info-label">HORA:</span>
                 <span class="info-value">{{ \Carbon\Carbon::parse($orden->fecha_creacion)->format('H:i:s') }}</span>
             </div>
-            @if ($orden->hora_recogida)
-                <div class="info-row">
-                    <span class="info-label">HORA RECOGIDA:</span>
-                    <span class="info-value">{{ \Carbon\Carbon::parse($orden->hora_recogida)->format('H:i') }}</span>
-                </div>
-            @endif
         </div>
 
         <!-- INFORMACIÓN DE LA ORDEN -->
@@ -441,7 +435,7 @@
             </div>
             <div class="info-row">
                 <span class="info-label">Estado Pago:</span>
-                <span class="info-value">{{ $orden->pagado ? 'PAGADO' : 'PENDIENTE' }}</span>
+                <span class="info-value">PAGADO</span>
             </div>
         </div>
 

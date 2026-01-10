@@ -120,9 +120,7 @@ class OrdenController extends TicketsController
 
                 $this->crearTicket($orden->id_orden);
 
-                if ($request->metodo_pago === 'SALDO') {
-                    $this->generarTicketPdf($orden->id_orden);
-                }
+                $this->generarTicketPdf($orden->id_orden);
 
                 broadcast(new ActualizarMenu($request->id_menu));
                 broadcast(new ActualizarOrdenes($orden->id_orden));

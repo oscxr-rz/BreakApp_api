@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Admin\ActualizarOrdenes;
 use App\Http\Controllers\Controller;
 use App\Models\Orden;
 use Exception;
@@ -50,6 +51,8 @@ class OrdenQRController extends Controller
                     'pagado' => 1
                 ]);
 
+                broadcast(new ActualizarOrdenes($orden->id_orden));
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden pagada correctamente',
@@ -77,7 +80,7 @@ class OrdenQRController extends Controller
                 $orden->update([
                     'estado' => 'ENTREGADO'
                 ]);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Orden entregada correctamente',
